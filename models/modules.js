@@ -26,36 +26,24 @@ module.exports.retrieveByCode = function retrieveByCode(code) {
     });
 };
 
-module.exports.deleteByCode = function deleteByCode(code) {
-    // Note:
-    // If using raw sql: Can use result.rowCount to check the number of rows affected
-    // But if using function/stored procedure, result.rowCount will always return null
-    const sql = `DELETE FROM module WHERE mod_code = $1`;
-    return query(sql, [code]).then(function (result) {
-        const rows = result.rowCount;
-
-        if (rows === 0) {
-            // Note: result.rowCount returns the number of rows processed instead of returned
-            // Read more: https://node-postgres.com/apis/result#resultrowcount-int--null
-            throw new EMPTY_RESULT_ERROR(`Module ${code} not found!`);
-        }
+module.exports.delete = function deleteByCode(code) {
+    return query('CALL delete_module($1)', [code])
+    .then(function (result) {
+        console.log('Module deleted successfully');
     })
+    .catch(function (error) {
+        throw error;
+    });
 };
 
-module.exports.updateByCode = function updateByCode(code, credit) {
-    // Note:
-    // If using raw sql: Can use result.rowCount to check the number of rows affected
-    // But if using function/stored procedure, result.rowCount will always return null
-    const sql = `UPDATE module SET credit_unit = $1 WHERE mod_code = $2`;
-    return query(sql, [credit, code]).then(function (result) {
-        const rows = result.rowCount;
-
-        if (rows === 0) {
-            // Note: result.rowCount returns the number of rows processed instead of returned
-            // Read more: https://node-postgres.com/apis/result#resultrowcount-int--null
-            throw new EMPTY_RESULT_ERROR(`Module ${code} not found!`);
-        }
+module.exports.update = function updateByCode(code, name, credit) {
+    return query('CALL update_module($1, $2)', [code, credit])
+    .then(function (result) {
+        console.log('Module updated successfully');
     })
+    .catch(function (error) {
+        throw error;
+    });
 };
 
 module.exports.retrieveAll = function retrieveAll() {
